@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+<style>
+  body{
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+  .section { margin-bottom: 2rem; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .75rem; padding-bottom: .4rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: .85rem 1rem; cursor: pointer; transition: border-color .15s; }
+  .card:hover { border-color: var(--color-border-primary); }
+  .card-top { display: flex; align-items: center; gap: 8px; margin-bottom: .35rem; }
+  .badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge-hot { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .badge-core { background: var(--color-background-info); color: var(--color-text-info); }
+  .badge-adv { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .card-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .interview-box { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.25rem; margin-bottom: .7rem; }
+  .q-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: .3rem; }
+  .q-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-top: .4rem; margin-right: 4px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+  .priority-bar { height: 4px; border-radius: 2px; margin-top: .5rem; }
+  .p5 { width: 100%; background: #e24b4a; }
+  .p4 { width: 80%; background: #ef9f27; }
+  .p3 { width: 60%; background: #378add; }
+  .p2 { width: 40%; background: #1d9e75; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 1rem; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
+</style>
+<h2 class="sr-only">Statistics topics to learn for Data Science, AI, and ML engineering jobs in 2026</h2>
+
+<div class="section">
+  <div class="section-title">Priority legend</div>
+  <div class="legend">
+    <span><span class="leg-dot" style="background:#e24b4a"></span><span class="badge badge-hot">Must-know</span> — asked in every interview</span>
+    <span><span class="leg-dot" style="background:#378add"></span><span class="badge badge-core">Core</span> — expected knowledge</span>
+    <span><span class="leg-dot" style="background:#ef9f27"></span><span class="badge badge-adv">Advanced</span> — differentiates you</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">1 — Foundations (start here)</div>
+  <div class="cards">
+    <div class="card" onclick="sendPrompt('Explain descriptive statistics for data science interviews ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Descriptive statistics</div>
+      <div class="card-desc">Mean, median, mode, variance, std dev, skewness, kurtosis. Data summarization and EDA.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain probability fundamentals for ML interviews ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Probability fundamentals</div>
+      <div class="card-desc">Conditional probability, Bayes' theorem, expected value, independence.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain probability distributions used in data science ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Probability distributions</div>
+      <div class="card-desc">Normal, binomial, Poisson, uniform — shapes, parameters, real-world uses.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain the central limit theorem and why it matters in data science ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Central limit theorem</div>
+      <div class="card-desc">Why sample means converge to normal. Backbone of inference and A/B testing.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">2 — Inference &amp; Experimentation (heavily interviewed)</div>
+  <div class="cards">
+    <div class="card" onclick="sendPrompt('Walk me through hypothesis testing for a data science interview ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Hypothesis testing</div>
+      <div class="card-desc">Null/alt hypothesis, p-values, alpha, t-tests, chi-square, Z-tests.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('How do A/B tests work and how do you interpret results? ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">A/B testing &amp; experimental design</div>
+      <div class="card-desc">Sample size, statistical power, significance levels, interpreting results.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain Type I and Type II errors with examples ↗')">
+      <div class="card-top"><span class="badge badge-core">Core</span></div>
+      <div class="card-name">Type I &amp; II errors, power</div>
+      <div class="card-desc">False positives, false negatives, statistical power tradeoffs.</div>
+      <div class="priority-bar p3"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('How do confidence intervals work? ↗')">
+      <div class="card-top"><span class="badge badge-core">Core</span></div>
+      <div class="card-name">Confidence intervals</div>
+      <div class="card-desc">What CIs express, how to construct them, common misinterpretations.</div>
+      <div class="priority-bar p3"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">3 — ML-specific statistics (core to every DS/ML role)</div>
+  <div class="cards">
+    <div class="card" onclick="sendPrompt('Explain the bias-variance tradeoff in ML ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Bias-variance tradeoff</div>
+      <div class="card-desc">Overfitting, underfitting, model complexity, regularization effects.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain cross-validation techniques for ML ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Cross-validation</div>
+      <div class="card-desc">k-fold, stratified, leave-one-out. Why and when to use each.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain ROC curve, AUC, precision and recall for ML models ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Model evaluation metrics</div>
+      <div class="card-desc">ROC-AUC, precision, recall, F1, confusion matrix, RMSE.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('How do you handle imbalanced datasets statistically? ↗')">
+      <div class="card-top"><span class="badge badge-core">Core</span></div>
+      <div class="card-name">Imbalanced datasets</div>
+      <div class="card-desc">Class imbalance effects, SMOTE, class weighting, resampling strategies.</div>
+      <div class="priority-bar p3"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain regression analysis for data science and ML ↗')">
+      <div class="card-top"><span class="badge badge-hot">Must-know</span></div>
+      <div class="card-name">Regression analysis</div>
+      <div class="card-desc">Linear &amp; logistic regression, R², adjusted R², multicollinearity, outlier handling.</div>
+      <div class="priority-bar p5"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain dimensionality reduction and PCA statistically ↗')">
+      <div class="card-top"><span class="badge badge-core">Core</span></div>
+      <div class="card-name">Dimensionality reduction</div>
+      <div class="card-desc">PCA, variance explained, curse of dimensionality, feature selection.</div>
+      <div class="priority-bar p3"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">4 — Advanced topics (differentiators for senior/ML engineer roles)</div>
+  <div class="cards">
+    <div class="card" onclick="sendPrompt('Explain Bayesian statistics and its use in ML ↗')">
+      <div class="card-top"><span class="badge badge-adv">Advanced</span></div>
+      <div class="card-name">Bayesian statistics</div>
+      <div class="card-desc">Prior, posterior, likelihood, Bayesian inference vs frequentist approach.</div>
+      <div class="priority-bar p4"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain time series analysis for ML engineering roles ↗')">
+      <div class="card-top"><span class="badge badge-adv">Advanced</span></div>
+      <div class="card-name">Time series analysis</div>
+      <div class="card-desc">Stationarity, ARIMA, seasonality, trend decomposition, autocorrelation.</div>
+      <div class="priority-bar p4"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain L1 and L2 regularization statistically ↗')">
+      <div class="card-top"><span class="badge badge-adv">Advanced</span></div>
+      <div class="card-name">Regularization theory</div>
+      <div class="card-desc">L1 (Lasso), L2 (Ridge), elastic net — statistical justification, sparsity.</div>
+      <div class="priority-bar p4"></div>
+    </div>
+    <div class="card" onclick="sendPrompt('Explain statistical data distributions and their ML applications ↗')">
+      <div class="card-top"><span class="badge badge-adv">Advanced</span></div>
+      <div class="card-name">Advanced distributions</div>
+      <div class="card-desc">Exponential, beta, Gamma, log-normal — when each appears in ML contexts.</div>
+      <div class="priority-bar p4"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Real interview questions — from FAANG &amp; top companies</div>
+  <div class="interview-box">
+    <div class="q-label">Foundations</div>
+    <div class="q-text">"What is a p-value? Explain it to a non-technical stakeholder."</div>
+    <span class="tag">Google</span><span class="tag">Amazon</span><span class="tag">Meta</span>
+  </div>
+  <div class="interview-box">
+    <div class="q-label">Experimentation</div>
+    <div class="q-text">"How do you determine the sample size for an A/B test?"</div>
+    <span class="tag">Tinder</span><span class="tag">Airbnb</span><span class="tag">Netflix</span>
+  </div>
+  <div class="interview-box">
+    <div class="q-label">ML Stats</div>
+    <div class="q-text">"Explain the bias-variance tradeoff and how regularization addresses it."</div>
+    <span class="tag">Amazon</span><span class="tag">Stripe</span><span class="tag">OpenAI</span>
+  </div>
+  <div class="interview-box">
+    <div class="q-label">Model evaluation</div>
+    <div class="q-text">"When would you choose F1 score over AUC? What about with imbalanced classes?"</div>
+    <span class="tag">McKinsey</span><span class="tag">Google</span>
+  </div>
+  <div class="interview-box">
+    <div class="q-label">Advanced</div>
+    <div class="q-text">"What is the difference between frequentist and Bayesian inference?"</div>
+    <span class="tag">Research roles</span><span class="tag">OpenAI</span>
+  </div>
+</div>
+
+  
+</body>
+</html>

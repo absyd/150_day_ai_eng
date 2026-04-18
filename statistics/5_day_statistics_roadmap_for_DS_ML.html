@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+<style>
+  body{
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+*{box-sizing:border-box}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.day-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1.25rem;overflow:hidden}
+.day-header{display:flex;align-items:center;gap:12px;padding:.9rem 1.1rem;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;user-select:none}
+.day-header:hover{background:var(--color-background-secondary)}
+.day-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.day-meta{flex:1}
+.day-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px}
+.day-sub{font-size:12px;color:var(--color-text-secondary);margin:0}
+.chevron{font-size:12px;color:var(--color-text-tertiary);transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.day-body{padding:1rem 1.1rem}
+.section-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase;margin:0 0 .5rem}
+.topic-list{list-style:none;margin:0 0 1rem;padding:0}
+.topic-list li{font-size:13px;color:var(--color-text-primary);padding:3px 0;display:flex;align-items:baseline;gap:6px}
+.topic-list li::before{content:"";width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.resources{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:1rem}
+.res-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;text-decoration:none;display:block;border:0.5px solid var(--color-border-tertiary)}
+.res-card:hover{border-color:var(--color-border-secondary)}
+.res-type{font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.res-name{font-size:12px;color:var(--color-text-primary);font-weight:500;line-height:1.4}
+.res-detail{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.project-box{border-radius:var(--border-radius-md);padding:.75rem 1rem;margin-bottom:.5rem;border-left:3px solid}
+.project-box.proj-green{background:var(--color-background-success);border-color:var(--color-border-success)}
+.project-box .proj-label{font-size:11px;font-weight:500;color:var(--color-text-success);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.project-box .proj-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.project-box .proj-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.do-btn{display:inline-block;margin-top:.5rem;font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer}
+.do-btn:hover{background:var(--color-background-secondary)}
+.time-pill{font-size:11px;background:var(--color-background-secondary);color:var(--color-text-secondary);padding:2px 8px;border-radius:20px;border:0.5px solid var(--color-border-tertiary);white-space:nowrap}
+.progress-row{display:flex;gap:6px;margin-bottom:1.25rem}
+.prog-seg{flex:1;height:6px;border-radius:3px;background:var(--color-border-tertiary);cursor:pointer;transition:opacity .15s}
+.prog-seg:hover{opacity:.7}
+.prog-seg.done{background:#1D9E75}
+.prog-seg.active{background:#378ADD}
+.prog-seg.todo{background:var(--color-border-tertiary)}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:1.25rem}
+.ov-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .75rem;text-align:center;cursor:pointer;border:0.5px solid var(--color-border-tertiary)}
+.ov-card:hover{border-color:var(--color-border-secondary)}
+.ov-day{font-size:10px;color:var(--color-text-secondary);font-weight:500;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.ov-topic{font-size:12px;color:var(--color-text-primary);font-weight:500;line-height:1.3}
+.ov-time{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+</style>
+
+<h2 class="sr-only">Interactive 5-day statistics roadmap for data science and ML engineering jobs</h2>
+
+<div style="margin-bottom:1rem">
+  <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:.6rem">Track progress — click a segment to mark done</div>
+  <div class="progress-row" id="prog-row">
+    <div class="prog-seg active" data-day="0" onclick="markDay(0)" title="Day 1"></div>
+    <div class="prog-seg todo" data-day="1" onclick="markDay(1)" title="Day 2"></div>
+    <div class="prog-seg todo" data-day="2" onclick="markDay(2)" title="Day 3"></div>
+    <div class="prog-seg todo" data-day="3" onclick="markDay(3)" title="Day 4"></div>
+    <div class="prog-seg todo" data-day="4" onclick="markDay(4)" title="Day 5"></div>
+  </div>
+</div>
+
+<div class="overview-grid">
+  <div class="ov-card" onclick="toggleDay('d1')"><div class="ov-day">Day 1</div><div class="ov-topic">Probability & Distributions</div><div class="ov-time">~4 hrs</div></div>
+  <div class="ov-card" onclick="toggleDay('d2')"><div class="ov-day">Day 2</div><div class="ov-topic">Inference & Hypothesis</div><div class="ov-time">~4 hrs</div></div>
+  <div class="ov-card" onclick="toggleDay('d3')"><div class="ov-day">Day 3</div><div class="ov-topic">Regression & Correlation</div><div class="ov-time">~4 hrs</div></div>
+  <div class="ov-card" onclick="toggleDay('d4')"><div class="ov-day">Day 4</div><div class="ov-topic">ML Evaluation Stats</div><div class="ov-time">~5 hrs</div></div>
+  <div class="ov-card" onclick="toggleDay('d5')"><div class="ov-day">Day 5</div><div class="ov-topic">A/B Testing & Bayes</div><div class="ov-time">~5 hrs</div></div>
+</div>
+
+<div class="day-card" id="d1">
+  <div class="day-header" onclick="toggleDay('d1')">
+    <div class="day-num" style="background:#E6F1FB;color:#0C447C">1</div>
+    <div class="day-meta">
+      <p class="day-title">Probability foundations & distributions</p>
+      <p class="day-sub">Bayes' theorem · normal distribution · CLT · expected value</p>
+    </div>
+    <span class="time-pill">~4 hrs</span>
+    <span class="chevron open" id="chev-d1">▼</span>
+  </div>
+  <div class="day-body" id="body-d1">
+    <div class="section-label">Topics to cover</div>
+    <ul class="topic-list">
+      <li><span style="background:#378ADD;margin-top:5px"></span>Conditional probability, independence, joint probability</li>
+      <li><span style="background:#378ADD;margin-top:5px"></span>Bayes' theorem — formula and intuition</li>
+      <li><span style="background:#378ADD;margin-top:5px"></span>Normal, binomial, Poisson, uniform distributions</li>
+      <li><span style="background:#378ADD;margin-top:5px"></span>Central limit theorem — why sample means converge</li>
+      <li><span style="background:#378ADD;margin-top:5px"></span>Mean, variance, standard deviation of distributions</li>
+    </ul>
+    <div class="section-label">Resources</div>
+    <div class="resources">
+      <a class="res-card" href="https://www.khanacademy.org/math/statistics-probability/probability-library" target="_blank">
+        <div class="res-type" style="color:#639922">Free course</div>
+        <div class="res-name">Khan Academy — Probability</div>
+        <div class="res-detail">Best visual intro, free</div>
+      </a>
+      <a class="res-card" href="https://seeing-theory.brown.edu" target="_blank">
+        <div class="res-type" style="color:#185FA5">Interactive</div>
+        <div class="res-name">Seeing Theory</div>
+        <div class="res-detail">Visual probability & stats</div>
+      </a>
+      <a class="res-card" href="https://www.youtube.com/watch?v=uzkc-qNVoOk" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">3Blue1Brown — Bayes theorem</div>
+        <div class="res-detail">Best visual explanation</div>
+      </a>
+      <a class="res-card" href="https://www.statquest.org" target="_blank">
+        <div class="res-type" style="color:#993C1D">Video series</div>
+        <div class="res-name">StatQuest — Distributions</div>
+        <div class="res-detail">Clear, interview-focused</div>
+      </a>
+    </div>
+    <div class="section-label">Hands-on project</div>
+    <div class="project-box proj-green">
+      <div class="proj-label">Python notebook</div>
+      <div class="proj-title">Simulate and plot distributions</div>
+      <div class="proj-desc">Use numpy/scipy to generate 10,000 samples from normal, binomial & Poisson distributions. Plot histograms with matplotlib. Verify CLT by sampling means of size 30 and plotting the result.</div>
+      <button class="do-btn" onclick="sendPrompt('Give me a Python notebook exercise to simulate and visualize normal, binomial and Poisson distributions, and demonstrate the Central Limit Theorem ↗')">Get the notebook exercise ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="day-card" id="d2">
+  <div class="day-header" onclick="toggleDay('d2')">
+    <div class="day-num" style="background:#E1F5EE;color:#085041">2</div>
+    <div class="day-meta">
+      <p class="day-title">Statistical inference & hypothesis testing</p>
+      <p class="day-sub">p-values · t-tests · confidence intervals · Type I/II errors</p>
+    </div>
+    <span class="time-pill">~4 hrs</span>
+    <span class="chevron" id="chev-d2">▼</span>
+  </div>
+  <div class="day-body" id="body-d2" style="display:none">
+    <div class="section-label">Topics to cover</div>
+    <ul class="topic-list">
+      <li><span style="background:#1D9E75;margin-top:5px"></span>Null vs alternative hypothesis — framing clearly</li>
+      <li><span style="background:#1D9E75;margin-top:5px"></span>p-value — what it means and what it doesn't</li>
+      <li><span style="background:#1D9E75;margin-top:5px"></span>One-sample & two-sample t-tests, Z-tests, chi-square</li>
+      <li><span style="background:#1D9E75;margin-top:5px"></span>Type I error (false positive) and Type II error (false negative)</li>
+      <li><span style="background:#1D9E75;margin-top:5px"></span>Confidence intervals — construction and interpretation</li>
+      <li><span style="background:#1D9E75;margin-top:5px"></span>Statistical power and effect size</li>
+    </ul>
+    <div class="section-label">Resources</div>
+    <div class="resources">
+      <a class="res-card" href="https://www.youtube.com/watch?v=0oc49DyA3hU" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">StatQuest — Hypothesis testing</div>
+        <div class="res-detail">p-values explained clearly</div>
+      </a>
+      <a class="res-card" href="https://www.khanacademy.org/math/statistics-probability/significance-tests-one-sample" target="_blank">
+        <div class="res-type" style="color:#639922">Free course</div>
+        <div class="res-name">Khan Academy — Significance tests</div>
+        <div class="res-detail">Step-by-step exercises</div>
+      </a>
+      <a class="res-card" href="https://scipy-lectures.org/packages/statistics/index.html" target="_blank">
+        <div class="res-type" style="color:#185FA5">Docs</div>
+        <div class="res-name">SciPy Stats — Official docs</div>
+        <div class="res-detail">All tests with Python code</div>
+      </a>
+      <a class="res-card" href="https://www.statology.org/hypothesis-testing/" target="_blank">
+        <div class="res-type" style="color:#993C1D">Reference</div>
+        <div class="res-name">Statology</div>
+        <div class="res-detail">Cheatsheets for every test</div>
+      </a>
+    </div>
+    <div class="section-label">Hands-on project</div>
+    <div class="project-box proj-green">
+      <div class="proj-label">Python notebook</div>
+      <div class="proj-title">Hypothesis test on real data</div>
+      <div class="proj-desc">Download the Titanic or Iris dataset (Kaggle/sklearn). Run a two-sample t-test comparing means across groups. Compute 95% confidence intervals. Interpret p-values and visualize the distributions overlaid.</div>
+      <button class="do-btn" onclick="sendPrompt('Give me a Python exercise: run a two-sample t-test on the Titanic dataset, compute confidence intervals, and interpret p-values with visualizations ↗')">Get the exercise ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="day-card" id="d3">
+  <div class="day-header" onclick="toggleDay('d3')">
+    <div class="day-num" style="background:#FAEEDA;color:#633806">3</div>
+    <div class="day-meta">
+      <p class="day-title">Regression, correlation & linear models</p>
+      <p class="day-sub">OLS · logistic regression · R² · multicollinearity</p>
+    </div>
+    <span class="time-pill">~4 hrs</span>
+    <span class="chevron" id="chev-d3">▼</span>
+  </div>
+  <div class="day-body" id="body-d3" style="display:none">
+    <div class="section-label">Topics to cover</div>
+    <ul class="topic-list">
+      <li><span style="background:#BA7517;margin-top:5px"></span>Linear regression — OLS derivation and assumptions</li>
+      <li><span style="background:#BA7517;margin-top:5px"></span>R², adjusted R², interpreting coefficients</li>
+      <li><span style="background:#BA7517;margin-top:5px"></span>Logistic regression — log-odds, sigmoid, decision boundary</li>
+      <li><span style="background:#BA7517;margin-top:5px"></span>Pearson & Spearman correlation</li>
+      <li><span style="background:#BA7517;margin-top:5px"></span>Multicollinearity, VIF, detecting and handling it</li>
+      <li><span style="background:#BA7517;margin-top:5px"></span>Residual analysis and outlier detection</li>
+    </ul>
+    <div class="section-label">Resources</div>
+    <div class="resources">
+      <a class="res-card" href="https://www.youtube.com/watch?v=nk2CQITm_eo" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">StatQuest — Linear regression</div>
+        <div class="res-detail">Best visual walkthrough</div>
+      </a>
+      <a class="res-card" href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">
+        <div class="res-type" style="color:#185FA5">Docs</div>
+        <div class="res-name">Scikit-learn — Linear models</div>
+        <div class="res-detail">Ridge, Lasso, Logistic</div>
+      </a>
+      <a class="res-card" href="https://www.statsmodels.org/stable/regression.html" target="_blank">
+        <div class="res-type" style="color:#185FA5">Library</div>
+        <div class="res-name">Statsmodels</div>
+        <div class="res-detail">Full OLS output like R</div>
+      </a>
+      <a class="res-card" href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">
+        <div class="res-type" style="color:#639922">Free course</div>
+        <div class="res-name">Kaggle — Intro to ML</div>
+        <div class="res-detail">Practical regression lab</div>
+      </a>
+    </div>
+    <div class="section-label">Hands-on project</div>
+    <div class="project-box proj-green">
+      <div class="proj-label">Python notebook</div>
+      <div class="proj-title">Predict house prices with regression</div>
+      <div class="proj-desc">Use the Boston Housing or California Housing dataset. Fit linear regression with statsmodels, inspect R² and coefficients, detect multicollinearity with VIF, then fit logistic regression on a binary target and plot the ROC curve.</div>
+      <button class="do-btn" onclick="sendPrompt('Give me a step-by-step Python exercise: linear regression on California Housing data, VIF multicollinearity check, and logistic regression with ROC curve ↗')">Get the exercise ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="day-card" id="d4">
+  <div class="day-header" onclick="toggleDay('d4')">
+    <div class="day-num" style="background:#EEEDFE;color:#3C3489">4</div>
+    <div class="day-meta">
+      <p class="day-title">ML evaluation statistics</p>
+      <p class="day-sub">Bias-variance · cross-validation · ROC-AUC · imbalance</p>
+    </div>
+    <span class="time-pill">~5 hrs</span>
+    <span class="chevron" id="chev-d4">▼</span>
+  </div>
+  <div class="day-body" id="body-d4" style="display:none">
+    <div class="section-label">Topics to cover</div>
+    <ul class="topic-list">
+      <li><span style="background:#7F77DD;margin-top:5px"></span>Bias-variance tradeoff — mathematical derivation</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>k-fold and stratified cross-validation</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>Confusion matrix — TP, FP, FN, TN</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>Precision, recall, F1, when to choose each</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>ROC curve and AUC interpretation</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>Handling class imbalance — SMOTE, class weights</li>
+      <li><span style="background:#7F77DD;margin-top:5px"></span>Regularization — L1 (Lasso), L2 (Ridge) intuition</li>
+    </ul>
+    <div class="section-label">Resources</div>
+    <div class="resources">
+      <a class="res-card" href="https://www.youtube.com/watch?v=EuBBz3bI-aA" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">StatQuest — Bias/Variance</div>
+        <div class="res-detail">The clearest explanation</div>
+      </a>
+      <a class="res-card" href="https://www.youtube.com/watch?v=4jRBRDbJemM" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">StatQuest — ROC & AUC</div>
+        <div class="res-detail">Step-by-step visual</div>
+      </a>
+      <a class="res-card" href="https://imbalanced-learn.org/stable/" target="_blank">
+        <div class="res-type" style="color:#185FA5">Library</div>
+        <div class="res-name">imbalanced-learn</div>
+        <div class="res-detail">SMOTE, undersampling</div>
+      </a>
+      <a class="res-card" href="https://www.kaggle.com/code/dansbecker/cross-validation" target="_blank">
+        <div class="res-type" style="color:#639922">Notebook</div>
+        <div class="res-name">Kaggle — Cross-validation</div>
+        <div class="res-detail">Runnable code examples</div>
+      </a>
+    </div>
+    <div class="section-label">Hands-on project</div>
+    <div class="project-box proj-green">
+      <div class="proj-label">Python notebook</div>
+      <div class="proj-title">Full model evaluation pipeline</div>
+      <div class="proj-desc">Use the Credit Card Fraud dataset (Kaggle — highly imbalanced). Train a classifier, evaluate with confusion matrix, F1, and ROC-AUC. Apply SMOTE oversampling, rerun, and compare results. Implement 5-fold cross-validation.</div>
+      <button class="do-btn" onclick="sendPrompt('Give me a Python exercise: full evaluation pipeline on an imbalanced classification dataset — confusion matrix, F1, AUC, SMOTE, and k-fold cross-validation ↗')">Get the exercise ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="day-card" id="d5">
+  <div class="day-header" onclick="toggleDay('d5')">
+    <div class="day-num" style="background:#FAECE7;color:#712B13">5</div>
+    <div class="day-meta">
+      <p class="day-title">A/B testing, Bayesian thinking & interview prep</p>
+      <p class="day-sub">Experiment design · sample size · Bayesian inference · mock Qs</p>
+    </div>
+    <span class="time-pill">~5 hrs</span>
+    <span class="chevron" id="chev-d5">▼</span>
+  </div>
+  <div class="day-body" id="body-d5" style="display:none">
+    <div class="section-label">Topics to cover</div>
+    <ul class="topic-list">
+      <li><span style="background:#D85A30;margin-top:5px"></span>A/B test design — null hypothesis, metric selection</li>
+      <li><span style="background:#D85A30;margin-top:5px"></span>Sample size calculation — power, effect size, alpha</li>
+      <li><span style="background:#D85A30;margin-top:5px"></span>Multiple testing problem and Bonferroni correction</li>
+      <li><span style="background:#D85A30;margin-top:5px"></span>Bayesian A/B testing — beta-binomial model</li>
+      <li><span style="background:#D85A30;margin-top:5px"></span>Prior, posterior, likelihood intuition</li>
+      <li><span style="background:#D85A30;margin-top:5px"></span>Common interview stat questions — rehearsal</li>
+    </ul>
+    <div class="section-label">Resources</div>
+    <div class="resources">
+      <a class="res-card" href="https://www.evanmiller.org/ab-testing/sample-size.html" target="_blank">
+        <div class="res-type" style="color:#185FA5">Tool</div>
+        <div class="res-name">Evan Miller — Sample size calc</div>
+        <div class="res-detail">Industry-standard tool</div>
+      </a>
+      <a class="res-card" href="https://www.youtube.com/watch?v=lG4VkPoG3ko" target="_blank">
+        <div class="res-type" style="color:#854F0B">Video</div>
+        <div class="res-name">StatQuest — Bayesian stats</div>
+        <div class="res-detail">Prior & posterior visually</div>
+      </a>
+      <a class="res-card" href="https://www.experimentation.works" target="_blank">
+        <div class="res-type" style="color:#993C1D">Reference</div>
+        <div class="res-name">Experimentation.works</div>
+        <div class="res-detail">A/B testing guides</div>
+      </a>
+      <a class="res-card" href="https://www.datainterview.com/blog/statistics-interview-questions" target="_blank">
+        <div class="res-type" style="color:#639922">Interview prep</div>
+        <div class="res-name">DataInterview.com</div>
+        <div class="res-detail">120 real stats Qs</div>
+      </a>
+    </div>
+    <div class="section-label">Hands-on project</div>
+    <div class="project-box proj-green">
+      <div class="proj-label">Capstone project</div>
+      <div class="proj-title">Design & simulate a full A/B test</div>
+      <div class="proj-desc">Simulate a conversion rate experiment in Python. Calculate required sample size, generate synthetic control/treatment data, run a z-test and compute confidence interval, then implement a Bayesian version using a beta-binomial model. Compare both approaches.</div>
+      <button class="do-btn" onclick="sendPrompt('Give me a Python capstone exercise: simulate an A/B test from scratch — sample size calculation, frequentist z-test, and Bayesian beta-binomial model comparison ↗')">Get the capstone ↗</button>
+    </div>
+    <div style="margin-top:.75rem">
+      <div class="section-label">Interview mock drill</div>
+      <button class="do-btn" style="width:100%;text-align:left" onclick="sendPrompt('Give me 10 statistics interview questions covering probability, hypothesis testing, bias-variance, and A/B testing — with model answers, as if I am interviewing at Google or Amazon ↗')">Start mock interview drill ↗</button>
+    </div>
+  </div>
+</div>
+
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:.9rem 1.1rem;margin-top:.5rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <div style="flex:1;min-width:180px">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">After Day 5 — keep the momentum</div>
+    <div style="font-size:12px;color:var(--color-text-secondary)">Practice with real datasets on Kaggle. Aim for 2–3 stat-heavy notebooks per week.</div>
+  </div>
+  <button class="do-btn" onclick="sendPrompt('Recommend 5 beginner-friendly Kaggle datasets and competitions to practice statistics for data science ↗')">Get Kaggle recommendations ↗</button>
+</div>
+
+<script>
+function toggleDay(id){
+  const body=document.getElementById('body-'+id);
+  const chev=document.getElementById('chev-'+id);
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  chev.classList.toggle('open',!open);
+}
+const completed=new Set();
+function markDay(i){
+  const segs=document.querySelectorAll('.prog-seg');
+  if(completed.has(i)){completed.delete(i)}else{completed.add(i)}
+  segs.forEach((s,idx)=>{
+    if(completed.has(idx)){s.className='prog-seg done'}
+    else if(idx===Math.min(...[0,1,2,3,4].filter(x=>!completed.has(x)))||completed.size===5){s.className='prog-seg active'}
+    else{s.className='prog-seg todo'}
+  });
+}
+</script>
+
+</body>
+</html>

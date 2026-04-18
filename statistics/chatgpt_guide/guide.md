@@ -1,7 +1,3 @@
-Three days is tight, but this is still doable **if you cut everything non-essential** and focus on *execution + intuition*, not theory perfection.
-
-I’ll give you a **compressed, high-efficiency battle plan** — this is closer to how you’d prep for a real DS interview sprint.
-
 ---
 
 # ⚠️ First — Reality Constraint
@@ -281,11 +277,4 @@ They care if you can say:
 
 ---
 
-# 🚀 If You Want Next Step
-
-I can:
-
-* Give you a **ready-made Kaggle-style project using this**
-* Or simulate a **real DS interview round (stats-focused)**
-
-Just tell me.
+ 

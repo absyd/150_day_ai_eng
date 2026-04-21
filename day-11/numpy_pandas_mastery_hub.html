@@ -1,0 +1,584 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+
+.hub { padding: 1rem 0; }
+.tab-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.tab { padding: 7px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all .15s; }
+.tab:hover { background: var(--color-background-secondary); }
+.tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* Cards */
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.card-sub { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 10px; }
+
+/* Code blocks */
+.code-block { background: var(--color-background-tertiary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-primary); line-height: 1.7; overflow-x: auto; margin: 8px 0; white-space: pre; }
+.kw { color: var(--color-text-info); font-weight: 500; }
+.cm { color: var(--color-text-tertiary); font-style: italic; }
+.fn { color: var(--color-text-warning); }
+.st { color: var(--color-text-success); }
+.num { color: var(--color-text-danger); }
+
+/* Comparison table */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table th { text-align: left; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-secondary); padding: 6px 8px; }
+.cmp-table td { padding: 7px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); vertical-align: top; color: var(--color-text-primary); }
+.cmp-table tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+.badge-blue { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-green { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-amber { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-red { background: var(--color-background-danger); color: var(--color-text-danger); }
+
+/* Interview Q&A */
+.qa-item { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 8px; overflow: hidden; }
+.qa-q { padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; justify-content: space-between; align-items: center; gap: 8px; user-select: none; }
+.qa-q:hover { background: var(--color-background-secondary); }
+.qa-arrow { color: var(--color-text-tertiary); font-size: 11px; transition: transform .2s; flex-shrink: 0; }
+.qa-item.open .qa-arrow { transform: rotate(180deg); }
+.qa-a { display: none; padding: 0 14px 12px; font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; border-top: 0.5px solid var(--color-border-tertiary); }
+.qa-item.open .qa-a { display: block; padding-top: 10px; }
+
+/* Concept pills */
+.concept-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.concept { padding: 4px 10px; border-radius: 99px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); cursor: pointer; transition: all .15s; }
+.concept:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+/* Workflow steps */
+.steps { counter-reset: step; }
+.step { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+.step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--color-background-info); color: var(--color-text-info); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-body { flex: 1; }
+.step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+.step-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+
+/* 2-col grid */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 500px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* Section heading */
+.sec-heading { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.sec-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 16px; line-height: 1.5; }
+
+/* Benchmark viz */
+.bench-bar-wrap { margin: 6px 0; }
+.bench-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 3px; display: flex; justify-content: space-between; }
+.bench-bar { height: 10px; border-radius: 99px; transition: width .6s ease; }
+.bench-fast { background: var(--color-background-success); border: 0.5px solid var(--color-border-success,var(--color-border-secondary)); }
+.bench-slow { background: var(--color-background-danger); border: 0.5px solid var(--color-border-danger,var(--color-border-secondary)); }
+
+.tip { background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 8px 12px; font-size: 12px; color: var(--color-text-warning); margin: 8px 0; }
+.tip strong { font-weight: 500; }
+</style>
+
+<div class="hub">
+<div class="tab-bar">
+  <button class="tab active" onclick="show('numpy')">NumPy core</button>
+  <button class="tab" onclick="show('broadcast')">Broadcasting</button>
+  <button class="tab" onclick="show('linalg')">Linear algebra</button>
+  <button class="tab" onclick="show('scratch')">From scratch</button>
+  <button class="tab" onclick="show('pandas')">Pandas core</button>
+  <button class="tab" onclick="show('eda')">EDA workflow</button>
+  <button class="tab" onclick="show('interview')">Interview Q&A</button>
+</div>
+
+<!-- NUMPY CORE -->
+<div id="s-numpy" class="section active">
+  <p class="sec-heading">NumPy arrays & the no-loop philosophy</p>
+  <p class="sec-sub">NumPy stores data in contiguous C arrays. Operations happen in compiled Fortran/C — not Python loops. The golden rule: <em>if you're looping, you're doing it wrong.</em></p>
+
+  <div class="card">
+    <div class="card-title">Array creation — real workflow patterns</div>
+    <div class="code-block"><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># From data</span>
+arr = np.<span class="fn">array</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>], dtype=np.float32)
+
+<span class="cm"># Structured initialization</span>
+np.<span class="fn">zeros</span>((<span class="num">3</span>, <span class="num">4</span>))        <span class="cm"># all zeros, shape 3×4</span>
+np.<span class="fn">ones</span>((<span class="num">2</span>, <span class="num">5</span>))         <span class="cm"># all ones</span>
+np.<span class="fn">eye</span>(<span class="num">4</span>)               <span class="cm"># identity matrix</span>
+np.<span class="fn">arange</span>(<span class="num">0</span>, <span class="num">10</span>, <span class="num">0.5</span>)  <span class="cm"># like range() but floats</span>
+np.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">1</span>, <span class="num">100</span>) <span class="cm"># 100 evenly-spaced pts</span>
+
+<span class="cm"># Random (set seed for reproducibility)</span>
+rng = np.random.<span class="fn">default_rng</span>(seed=<span class="num">42</span>)
+rng.<span class="fn">normal</span>(<span class="num">0</span>, <span class="num">1</span>, (<span class="num">1000</span>, <span class="num">768</span>))  <span class="cm"># e.g. embedding matrix</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Shape, strides & views — the memory model</div>
+    <div class="card-sub">Arrays have shape, dtype, and strides. Slices are <strong>views</strong> (no copy) — critical for performance and a common bug source.</div>
+    <div class="code-block">a = np.<span class="fn">arange</span>(<span class="num">24</span>).<span class="fn">reshape</span>(<span class="num">4</span>, <span class="num">6</span>)
+
+a.shape    <span class="cm"># (4, 6)</span>
+a.strides  <span class="cm"># (48, 8) bytes — row-major C order</span>
+a.dtype    <span class="cm"># int64</span>
+a.ndim     <span class="cm"># 2</span>
+a.size     <span class="cm"># 24 total elements</span>
+
+<span class="cm"># View vs copy — interview classic</span>
+view = a[<span class="num">1</span>:<span class="num">3</span>, :]    <span class="cm"># NO copy — modifying view changes a</span>
+copy = a[<span class="num">1</span>:<span class="num">3</span>, :].<span class="fn">copy</span>()  <span class="cm"># explicit copy</span>
+
+<span class="cm"># Transpose is free — just flips strides</span>
+a.T.strides  <span class="cm"># (8, 48)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Vectorised ops — the no-loop way</div>
+    <div class="code-block"><span class="cm"># Element-wise arithmetic (no loop needed)</span>
+scores = np.<span class="fn">array</span>([<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>, <span class="num">96</span>])
+normalised = (scores - scores.<span class="fn">mean</span>()) / scores.<span class="fn">std</span>()
+
+<span class="cm"># Boolean masking (replaces if-loops)</span>
+high_scores = scores[scores > <span class="num">90</span>]  <span class="cm"># [92, 96]</span>
+
+<span class="cm"># Universal functions (ufuncs) — compiled C, extremely fast</span>
+np.<span class="fn">sqrt</span>(scores)
+np.<span class="fn">exp</span>(normalised)
+np.<span class="fn">log1p</span>(scores)    <span class="cm"># numerically stable log(1+x)</span>
+
+<span class="cm"># Axis-wise reductions</span>
+matrix = rng.<span class="fn">random</span>((<span class="num">100</span>, <span class="num">50</span>))
+matrix.<span class="fn">sum</span>(axis=<span class="num">0</span>)   <span class="cm"># sum each column → shape (50,)</span>
+matrix.<span class="fn">mean</span>(axis=<span class="num">1</span>)  <span class="cm"># mean each row → shape (100,)</span>
+matrix.<span class="fn">argmax</span>(axis=<span class="num">1</span>) <span class="cm"># index of max per row</span></div>
+  </div>
+
+  <div class="tip"><strong>Interview insight:</strong> "Why is NumPy faster than Python loops?" — Answer: numpy stores homogeneous data in contiguous memory and calls compiled C/Fortran routines. Python loops have per-iteration overhead: type checking, reference counting, bytecode interpretation. NumPy eliminates all of that.</div>
+</div>
+
+<!-- BROADCASTING -->
+<div id="s-broadcast" class="section">
+  <p class="sec-heading">Broadcasting — the shape-matching superpower</p>
+  <p class="sec-sub">Broadcasting lets arrays of different shapes operate together without copying data. NumPy expands dimensions implicitly by the rules below.</p>
+
+  <div class="card">
+    <div class="card-title">The 3 broadcasting rules</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pad dimensions on the left</div><div class="step-desc">If shapes have different number of dims, prefix 1s. Shape (3,) becomes (1, 3).</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Expand size-1 dimensions</div><div class="step-desc">Any axis of size 1 is stretched to match the other array's size along that axis.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Sizes must match or be 1</div><div class="step-desc">If neither axis is 1 and sizes differ, you get a ValueError. No silent surprises.</div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Shape compatibility chart</div>
+    <table class="cmp-table">
+      <tr><th>A shape</th><th>B shape</th><th>Result shape</th><th>Works?</th></tr>
+      <tr><td>(3, 4)</td><td>(4,)</td><td>(3, 4)</td><td><span class="badge badge-green">yes</span></td></tr>
+      <tr><td>(3, 1)</td><td>(1, 4)</td><td>(3, 4)</td><td><span class="badge badge-green">yes</span></td></tr>
+      <tr><td>(3, 4)</td><td>(3,)</td><td>—</td><td><span class="badge badge-red">error</span></td></tr>
+      <tr><td>(1, 100, 1)</td><td>(32, 1, 768)</td><td>(32, 100, 768)</td><td><span class="badge badge-green">yes</span></td></tr>
+      <tr><td>(3, 4)</td><td>(3, 5)</td><td>—</td><td><span class="badge badge-red">error</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Real-world broadcasting patterns</div>
+    <div class="code-block"><span class="cm"># Pattern 1: Normalise each row independently</span>
+X = rng.<span class="fn">random</span>((<span class="num">1000</span>, <span class="num">20</span>))  <span class="cm"># 1000 samples, 20 features</span>
+mean = X.<span class="fn">mean</span>(axis=<span class="num">0</span>)      <span class="cm"># shape (20,)</span>
+std  = X.<span class="fn">std</span>(axis=<span class="num">0</span>)       <span class="cm"># shape (20,)</span>
+X_norm = (X - mean) / std    <span class="cm"># broadcast: (1000,20)-(20,) → works!</span>
+
+<span class="cm"># Pattern 2: Pairwise distance (no loop)</span>
+a = rng.<span class="fn">random</span>((<span class="num">100</span>, <span class="num">3</span>))     <span class="cm"># 100 points in 3D</span>
+b = rng.<span class="fn">random</span>((<span class="num">200</span>, <span class="num">3</span>))     <span class="cm"># 200 points in 3D</span>
+<span class="cm"># a[:,None,:] → (100,1,3)  b[None,:,:] → (1,200,3)</span>
+diffs = a[:, <span class="fn">None</span>, :] - b[<span class="fn">None</span>, :, :]  <span class="cm"># (100,200,3)</span>
+dists = np.<span class="fn">sqrt</span>((diffs**<span class="num">2</span>).<span class="fn">sum</span>(axis=-<span class="num">1</span>)) <span class="cm"># (100,200)</span>
+
+<span class="cm"># Pattern 3: Bias addition in neural nets</span>
+W = rng.<span class="fn">random</span>((<span class="num">64</span>, <span class="num">128</span>))    <span class="cm"># weight matrix</span>
+b = rng.<span class="fn">random</span>(<span class="num">128</span>)         <span class="cm"># bias vector (128,)</span>
+out = X @ W + b              <span class="cm"># b broadcasts across batch</span></div>
+  </div>
+
+  <div class="tip"><strong>Interview gotcha:</strong> Shape (3,) and (3,1) behave very differently in broadcasting. Always use <code>reshape(-1,1)</code> or <code>[:, np.newaxis]</code> when you need explicit column/row vectors.</div>
+</div>
+
+<!-- LINEAR ALGEBRA -->
+<div id="s-linalg" class="section">
+  <p class="sec-heading">Linear algebra — matmul, dot, norm, SVD</p>
+  <p class="sec-sub">NumPy delegates to BLAS/LAPACK — the same routines used in MATLAB. Understanding <em>what</em> these ops do geometrically is what interviewers test.</p>
+
+  <div class="card">
+    <div class="card-title">matmul vs dot — when to use which</div>
+    <table class="cmp-table">
+      <tr><th>Op</th><th>Use case</th><th>Batched?</th><th>Note</th></tr>
+      <tr><td><code>@</code> / matmul</td><td>Matrix × matrix, matrix × vector</td><td><span class="badge badge-green">yes</span></td><td>Preferred. Works on stacks of matrices.</td></tr>
+      <tr><td>np.dot</td><td>Dot product, matrix mult</td><td><span class="badge badge-red">no</span></td><td>Avoid for >2D arrays; semantics get confusing.</td></tr>
+      <tr><td>np.einsum</td><td>Any contraction you can describe</td><td><span class="badge badge-green">yes</span></td><td>Most expressive but slower if not optimised.</td></tr>
+    </table>
+    <div class="code-block"><span class="cm"># @ operator — cleanest syntax, use this</span>
+A = rng.<span class="fn">random</span>((<span class="num">3</span>, <span class="num">4</span>))
+B = rng.<span class="fn">random</span>((<span class="num">4</span>, <span class="num">5</span>))
+C = A @ B            <span class="cm"># (3, 5)</span>
+
+<span class="cm"># Batched matmul — e.g. attention heads</span>
+Q = rng.<span class="fn">random</span>((<span class="num">8</span>, <span class="num">64</span>, <span class="num">32</span>))  <span class="cm"># 8 heads, 64 tokens, 32 dim</span>
+K = rng.<span class="fn">random</span>((<span class="num">8</span>, <span class="num">32</span>, <span class="num">64</span>))
+scores = Q @ K               <span class="cm"># (8, 64, 64) — batch matmul!</span>
+
+<span class="cm"># einsum — trace of matrix product</span>
+np.<span class="fn">einsum</span>(<span class="st">'ij,ji->'</span>, A, A.T)  <span class="cm"># scalar: trace(A Aᵀ)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Norms — L1, L2, Frobenius</div>
+    <div class="code-block">v = np.<span class="fn">array</span>([<span class="num">3.0</span>, <span class="num">4.0</span>])
+
+np.linalg.<span class="fn">norm</span>(v)           <span class="cm"># L2 = 5.0</span>
+np.linalg.<span class="fn">norm</span>(v, ord=<span class="num">1</span>)    <span class="cm"># L1 = 7.0  (|3|+|4|)</span>
+np.linalg.<span class="fn">norm</span>(v, ord=np.inf) <span class="cm"># L∞ = 4.0  (max)</span>
+
+<span class="cm"># Row-wise norms (no loop!)</span>
+M = rng.<span class="fn">random</span>((<span class="num">100</span>, <span class="num">128</span>))
+row_norms = np.linalg.<span class="fn">norm</span>(M, axis=<span class="num">1</span>, keepdims=<span class="num">True</span>)
+M_unit = M / row_norms        <span class="cm"># normalise each row</span>
+
+<span class="cm"># Frobenius norm of a matrix</span>
+np.linalg.<span class="fn">norm</span>(M, <span class="st">'fro'</span>)     <span class="cm"># sqrt(sum of squared elements)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">SVD — singular value decomposition</div>
+    <div class="card-sub">SVD factorises M into U Σ Vᵀ. Real-world uses: dimensionality reduction (PCA), recommender systems, image compression, solving least-squares.</div>
+    <div class="code-block">M = rng.<span class="fn">random</span>((<span class="num">50</span>, <span class="num">20</span>))
+U, s, Vt = np.linalg.<span class="fn">svd</span>(M, full_matrices=<span class="num">False</span>)
+
+<span class="cm"># U: (50,20) — left singular vectors (data space)</span>
+<span class="cm"># s: (20,)   — singular values (importance)</span>
+<span class="cm"># Vt:(20,20) — right singular vectors (feature space)</span>
+
+<span class="cm"># Rank-k approximation (key idea behind PCA)</span>
+k = <span class="num">5</span>
+M_approx = U[:, :k] * s[:k] @ Vt[:k, :]
+<span class="cm"># Captures most variance with k components</span>
+
+<span class="cm"># Explained variance</span>
+var_explained = s**<span class="num">2</span> / (s**<span class="num">2</span>).<span class="fn">sum</span>()
+cumulative = np.<span class="fn">cumsum</span>(var_explained)
+<span class="cm"># How many components explain 95% variance?</span>
+n_components = np.<span class="fn">searchsorted</span>(cumulative, <span class="num">0.95</span>) + <span class="num">1</span></div>
+  </div>
+</div>
+
+<!-- FROM SCRATCH -->
+<div id="s-scratch" class="section">
+  <p class="sec-heading">Zero-loop implementations from scratch</p>
+  <p class="sec-sub">These are the exact implementations interviewers ask for. No for-loops allowed.</p>
+
+  <div class="card">
+    <div class="card-title">Matrix multiply — from scratch</div>
+    <div class="code-block"><span class="cm"># Naive (loop) — baseline for benchmarking</span>
+<span class="kw">def</span> <span class="fn">matmul_naive</span>(A, B):
+    m, k = A.shape
+    k2, n = B.shape
+    <span class="kw">assert</span> k == k2
+    C = np.<span class="fn">zeros</span>((m, n))
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(m):
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(n):
+            <span class="kw">for</span> l <span class="kw">in</span> <span class="fn">range</span>(k):
+                C[i, j] += A[i, l] * B[l, j]
+    <span class="kw">return</span> C
+
+<span class="cm"># Vectorised (no loops) — the right way</span>
+<span class="kw">def</span> <span class="fn">matmul_vec</span>(A, B):
+    <span class="kw">return</span> A @ B   <span class="cm"># or: np.einsum('ik,kj->ij', A, B)</span>
+
+<span class="cm"># Speed: 500×500 matrices</span>
+<span class="cm"># Naive: ~15 seconds  |  Vectorised: ~0.003 seconds</span>
+<span class="cm"># Speedup: ~5000×</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cosine similarity — zero loops</div>
+    <div class="code-block"><span class="cm"># Single pair</span>
+<span class="kw">def</span> <span class="fn">cosine_sim</span>(a, b):
+    <span class="kw">return</span> np.<span class="fn">dot</span>(a, b) / (np.linalg.<span class="fn">norm</span>(a) * np.linalg.<span class="fn">norm</span>(b))
+
+<span class="cm"># Batched — all pairs between matrix A and B (no loop!)</span>
+<span class="kw">def</span> <span class="fn">cosine_sim_matrix</span>(A, B):
+    <span class="cm"># A: (m, d), B: (n, d)  →  returns (m, n)</span>
+    A_norm = A / np.linalg.<span class="fn">norm</span>(A, axis=<span class="num">1</span>, keepdims=<span class="num">True</span>)
+    B_norm = B / np.linalg.<span class="fn">norm</span>(B, axis=<span class="num">1</span>, keepdims=<span class="num">True</span>)
+    <span class="kw">return</span> A_norm @ B_norm.T  <span class="cm"># each entry is cosine similarity</span>
+
+<span class="cm"># Real-world use: semantic search</span>
+query   = rng.<span class="fn">random</span>(<span class="num">768</span>)                   <span class="cm"># one query embedding</span>
+docs    = rng.<span class="fn">random</span>((<span class="num">10000</span>, <span class="num">768</span>))           <span class="cm"># corpus embeddings</span>
+sims    = <span class="fn">cosine_sim_matrix</span>(query[<span class="fn">None</span>], docs) <span class="cm"># (1, 10000)</span>
+top_k   = np.<span class="fn">argsort</span>(sims[<span class="num">0</span>])[::-<span class="num">1</span>][:<span class="num">10</span>]      <span class="cm"># top-10 indices</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Softmax — numerically stable, zero loops</div>
+    <div class="code-block"><span class="cm"># Naive — WRONG (overflows for large logits)</span>
+<span class="kw">def</span> <span class="fn">softmax_naive</span>(x):
+    <span class="kw">return</span> np.<span class="fn">exp</span>(x) / np.<span class="fn">exp</span>(x).<span class="fn">sum</span>()
+
+<span class="cm"># Stable — subtract max first (same result, no overflow)</span>
+<span class="kw">def</span> <span class="fn">softmax</span>(x, axis=-<span class="num">1</span>):
+    x = x - x.<span class="fn">max</span>(axis=axis, keepdims=<span class="num">True</span>)  <span class="cm"># subtract max</span>
+    e = np.<span class="fn">exp</span>(x)
+    <span class="kw">return</span> e / e.<span class="fn">sum</span>(axis=axis, keepdims=<span class="num">True</span>)
+
+<span class="cm"># Batched softmax over rows</span>
+logits = rng.<span class="fn">random</span>((<span class="num">32</span>, <span class="num">10</span>))   <span class="cm"># 32 samples, 10 classes</span>
+probs  = <span class="fn">softmax</span>(logits, axis=<span class="num">1</span>) <span class="cm"># (32, 10), rows sum to 1</span>
+<span class="kw">assert</span> np.<span class="fn">allclose</span>(probs.<span class="fn">sum</span>(axis=<span class="num">1</span>), <span class="num">1.0</span>)  <span class="cm"># sanity check</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Benchmark results (approximate)</div>
+    <div class="bench-bar-wrap"><div class="bench-label"><span>NumPy matmul (500×500)</span><span>0.003s</span></div><div class="bench-bar bench-fast" style="width:2%"></div></div>
+    <div class="bench-bar-wrap"><div class="bench-label"><span>Naive triple loop</span><span>~15s</span></div><div class="bench-bar bench-slow" style="width:100%"></div></div>
+    <div class="bench-bar-wrap"><div class="bench-label"><span>Vectorised cosine (10k docs)</span><span>~2ms</span></div><div class="bench-bar bench-fast" style="width:1%"></div></div>
+    <div class="bench-bar-wrap"><div class="bench-label"><span>Loop cosine (10k docs)</span><span>~800ms</span></div><div class="bench-bar bench-slow" style="width:80%"></div></div>
+    <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px">Approximate timings on modern CPU. Actual results vary.</div>
+  </div>
+</div>
+
+<!-- PANDAS CORE -->
+<div id="s-pandas" class="section">
+  <p class="sec-heading">Pandas — DataFrames, indexing, groupby, merge</p>
+  <p class="sec-sub">Pandas is built on NumPy. A DataFrame is a dict of Series (columns). Knowing <em>when</em> to use loc vs iloc vs boolean indexing separates seniors from juniors.</p>
+
+  <div class="card">
+    <div class="card-title">loc vs iloc vs boolean indexing</div>
+    <table class="cmp-table">
+      <tr><th>Method</th><th>Index type</th><th>End-inclusive?</th><th>Use when</th></tr>
+      <tr><td><code>df.loc[r, c]</code></td><td>Label</td><td>Yes</td><td>Named rows/cols, date ranges, string index</td></tr>
+      <tr><td><code>df.iloc[r, c]</code></td><td>Integer position</td><td>No</td><td>Positional slicing like numpy</td></tr>
+      <tr><td><code>df[mask]</code></td><td>Boolean</td><td>n/a</td><td>Filter rows by condition</td></tr>
+    </table>
+    <div class="code-block"><span class="cm"># loc — label-based (end IS included)</span>
+df.<span class="fn">loc</span>[<span class="num">10</span>:<span class="num">20</span>, [<span class="st">'age'</span>, <span class="st">'salary'</span>]]
+df.<span class="fn">loc</span>[df[<span class="st">'dept'</span>] == <span class="st">'Eng'</span>, <span class="st">'salary'</span>]
+
+<span class="cm"># iloc — position-based (end NOT included)</span>
+df.<span class="fn">iloc</span>[:<span class="num">10</span>, -<span class="num">3</span>:]   <span class="cm"># first 10 rows, last 3 cols</span>
+
+<span class="cm"># Boolean masking — most common in practice</span>
+senior_eng = df[(df[<span class="st">'dept'</span>] == <span class="st">'Eng'</span>) & (df[<span class="st">'years'</span>] > <span class="num">5</span>)]
+
+<span class="cm"># SettingWithCopyWarning — the #1 pandas bug</span>
+<span class="cm"># WRONG: may modify a copy silently</span>
+df[df[<span class="st">'age'</span>] > <span class="num">30</span>][<span class="st">'salary'</span>] = <span class="num">50000</span>
+<span class="cm"># RIGHT: use loc</span>
+df.<span class="fn">loc</span>[df[<span class="st">'age'</span>] > <span class="num">30</span>, <span class="st">'salary'</span>] = <span class="num">50000</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">groupby — split-apply-combine</div>
+    <div class="code-block"><span class="cm"># Basic groupby</span>
+df.<span class="fn">groupby</span>(<span class="st">'dept'</span>)[<span class="st">'salary'</span>].<span class="fn">mean</span>()
+
+<span class="cm"># Multiple aggregations (agg)</span>
+summary = df.<span class="fn">groupby</span>(<span class="st">'dept'</span>).<span class="fn">agg</span>(
+    avg_sal=(<span class="st">'salary'</span>, <span class="st">'mean'</span>),
+    headcount=(<span class="st">'id'</span>, <span class="st">'count'</span>),
+    max_exp=(<span class="st">'years'</span>, <span class="st">'max'</span>)
+)
+
+<span class="cm"># Custom transform — add group mean back to df</span>
+df[<span class="st">'sal_vs_dept_avg'</span>] = df[<span class="st">'salary'</span>] - df.<span class="fn">groupby</span>(<span class="st">'dept'</span>)[<span class="st">'salary'</span>].<span class="fn">transform</span>(<span class="st">'mean'</span>)
+
+<span class="cm"># filter: keep groups with >10 members</span>
+df.<span class="fn">groupby</span>(<span class="st">'dept'</span>).<span class="fn">filter</span>(<span class="kw">lambda</span> g: <span class="fn">len</span>(g) > <span class="num">10</span>)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">merge / join — the SQL in pandas</div>
+    <table class="cmp-table">
+      <tr><th>Join type</th><th>Keeps</th><th>SQL equivalent</th></tr>
+      <tr><td>inner</td><td>Matching rows only</td><td>INNER JOIN</td></tr>
+      <tr><td>left</td><td>All left rows</td><td>LEFT JOIN</td></tr>
+      <tr><td>right</td><td>All right rows</td><td>RIGHT JOIN</td></tr>
+      <tr><td>outer</td><td>All rows, NaN fill</td><td>FULL OUTER JOIN</td></tr>
+    </table>
+    <div class="code-block">result = pd.<span class="fn">merge</span>(orders, customers,
+    on=<span class="st">'customer_id'</span>, how=<span class="st">'left'</span>)
+
+<span class="cm"># Different column names</span>
+pd.<span class="fn">merge</span>(a, b, left_on=<span class="st">'uid'</span>, right_on=<span class="st">'user_id'</span>)
+
+<span class="cm"># Multi-key join</span>
+pd.<span class="fn">merge</span>(sales, targets, on=[<span class="st">'region'</span>, <span class="st">'quarter'</span>])</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Method chaining — readable pipelines</div>
+    <div class="code-block"><span class="cm"># Bad: intermediate variables everywhere</span>
+df2 = df.<span class="fn">dropna</span>(subset=[<span class="st">'salary'</span>])
+df3 = df2[df2[<span class="st">'salary'</span>] > <span class="num">30000</span>]
+df4 = df3.<span class="fn">assign</span>(sal_k=df3[<span class="st">'salary'</span>] / <span class="num">1000</span>)
+
+<span class="cm"># Good: chained operations (pandas encourages this)</span>
+result = (
+    df
+    .<span class="fn">dropna</span>(subset=[<span class="st">'salary'</span>])
+    .<span class="fn">query</span>(<span class="st">'salary > 30000'</span>)
+    .<span class="fn">assign</span>(sal_k=<span class="kw">lambda</span> x: x[<span class="st">'salary'</span>] / <span class="num">1000</span>)
+    .<span class="fn">groupby</span>(<span class="st">'dept'</span>)[<span class="st">'sal_k'</span>]
+    .<span class="fn">agg</span>([<span class="st">'mean'</span>, <span class="st">'std'</span>])
+    .<span class="fn">round</span>(<span class="num">2</span>)
+)</div>
+  </div>
+</div>
+
+<!-- EDA WORKFLOW -->
+<div id="s-eda" class="section">
+  <p class="sec-heading">Full EDA workflow — Titanic-style</p>
+  <p class="sec-sub">This is the exact sequence you'd follow in a real ML/data project. Memorise the pattern, not individual commands.</p>
+
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">Load & first look</div>
+      <div class="code-block">df = pd.<span class="fn">read_csv</span>(<span class="st">'titanic.csv'</span>)
+<span class="fn">print</span>(df.shape)        <span class="cm"># (891, 12)</span>
+df.<span class="fn">head</span>()
+df.<span class="fn">dtypes</span>
+df.<span class="fn">info</span>()             <span class="cm"># non-null counts + dtypes</span></div>
+    </div></div>
+
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">Missing values audit</div>
+      <div class="code-block"><span class="cm"># Count & percent missing per column</span>
+missing = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'count'</span>: df.<span class="fn">isnull</span>().<span class="fn">sum</span>(),
+    <span class="st">'pct'</span>:   df.<span class="fn">isnull</span>().<span class="fn">mean</span>() * <span class="num">100</span>
+}).<span class="fn">query</span>(<span class="st">'count > 0'</span>).<span class="fn">sort_values</span>(<span class="st">'pct'</span>, ascending=<span class="num">False</span>)
+<span class="cm"># Age: 19.9%  Cabin: 77.1%  Embarked: 0.2%</span>
+
+<span class="cm"># Strategy per column:</span>
+df[<span class="st">'Age'</span>].<span class="fn">fillna</span>(df[<span class="st">'Age'</span>].<span class="fn">median</span>(), inplace=<span class="num">True</span>)
+df.<span class="fn">drop</span>(columns=[<span class="st">'Cabin'</span>], inplace=<span class="num">True</span>)  <span class="cm"># >70% missing</span>
+df.<span class="fn">dropna</span>(subset=[<span class="st">'Embarked'</span>], inplace=<span class="num">True</span>)</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">3</div><div class="step-body">
+      <div class="step-title">8 summary statistics</div>
+      <div class="code-block">df.<span class="fn">describe</span>()  <span class="cm"># count, mean, std, min, 25%, 50%, 75%, max</span>
+
+<span class="cm"># Additional key stats</span>
+stats = {
+    <span class="st">'survival_rate'</span>:  df[<span class="st">'Survived'</span>].<span class="fn">mean</span>(),
+    <span class="st">'age_skewness'</span>:   df[<span class="st">'Age'</span>].<span class="fn">skew</span>(),
+    <span class="st">'fare_kurtosis'</span>:  df[<span class="st">'Fare'</span>].<span class="fn">kurtosis</span>(),
+    <span class="st">'class_dist'</span>:     df[<span class="st">'Pclass'</span>].<span class="fn">value_counts</span>(normalize=<span class="num">True</span>),
+    <span class="st">'gender_dist'</span>:    df[<span class="st">'Sex'</span>].<span class="fn">value_counts</span>(),
+    <span class="st">'corr_with_surv'</span>: df.<span class="fn">select_dtypes</span>(include=<span class="st">'number'</span>).<span class="fn">corr</span>()[<span class="st">'Survived'</span>],
+    <span class="st">'pclass_surv'</span>:    df.<span class="fn">groupby</span>(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].<span class="fn">mean</span>(),
+    <span class="st">'sex_surv'</span>:       df.<span class="fn">groupby</span>(<span class="st">'Sex'</span>)[<span class="st">'Survived'</span>].<span class="fn">mean</span>()
+}</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">4</div><div class="step-body">
+      <div class="step-title">Distributions & outliers</div>
+      <div class="code-block"><span class="cm"># IQR-based outlier detection</span>
+Q1 = df[<span class="st">'Fare'</span>].<span class="fn">quantile</span>(<span class="num">0.25</span>)
+Q3 = df[<span class="st">'Fare'</span>].<span class="fn">quantile</span>(<span class="num">0.75</span>)
+IQR = Q3 - Q1
+outliers = df[(df[<span class="st">'Fare'</span>] < Q1 - <span class="num">1.5</span>*IQR) |
+              (df[<span class="st">'Fare'</span>] > Q3 + <span class="num">1.5</span>*IQR)]
+
+<span class="cm"># Log-transform heavy-tailed distributions</span>
+df[<span class="st">'log_fare'</span>] = np.<span class="fn">log1p</span>(df[<span class="st">'Fare'</span>])</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">5</div><div class="step-body">
+      <div class="step-title">Correlation analysis</div>
+      <div class="code-block">corr = df.<span class="fn">select_dtypes</span>(include=<span class="st">'number'</span>).<span class="fn">corr</span>()
+
+<span class="cm"># Top correlated features with target</span>
+target_corr = corr[<span class="st">'Survived'</span>].<span class="fn">abs</span>().<span class="fn">sort_values</span>(ascending=<span class="num">False</span>)
+
+<span class="cm"># Highlight highly correlated feature pairs (multicollinearity)</span>
+high_corr = (corr.<span class="fn">abs</span>() > <span class="num">0.8</span>) & (corr != <span class="num">1.0</span>)</div>
+    </div></div>
+
+    <div class="step"><div class="step-num">6</div><div class="step-body">
+      <div class="step-title">Feature engineering & export</div>
+      <div class="code-block"><span class="cm"># Create new features</span>
+df[<span class="st">'FamilySize'</span>] = df[<span class="st">'SibSp'</span>] + df[<span class="st">'Parch'</span>] + <span class="num">1</span>
+df[<span class="st">'IsAlone'</span>] = (df[<span class="st">'FamilySize'</span>] == <span class="num">1</span>).<span class="fn">astype</span>(<span class="fn">int</span>)
+df[<span class="st">'Title'</span>] = df[<span class="st">'Name'</span>].<span class="fn">str</span>.<span class="fn">extract</span>(<span class="st">r' ([A-Za-z]+)\.'</span>)
+
+<span class="cm"># Encode categoricals</span>
+df = pd.<span class="fn">get_dummies</span>(df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>], drop_first=<span class="num">True</span>)
+
+<span class="cm"># Export clean data</span>
+df.<span class="fn">to_csv</span>(<span class="st">'titanic_clean.csv'</span>, index=<span class="num">False</span>)</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- INTERVIEW Q&A -->
+<div id="s-interview" class="section">
+  <p class="sec-heading">Interview Q&A — NumPy & Pandas</p>
+  <p class="sec-sub">Covering beginner through senior-level questions. Click to expand answers.</p>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">What's the difference between a view and a copy in NumPy? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">A <strong>view</strong> shares memory with the original array — modifying the view changes the original. Slicing creates a view. A <strong>copy</strong> is an independent allocation. Use <code>.copy()</code> to be explicit. The <code>.base</code> attribute tells you if an array is a view. Fancy indexing (integer/boolean arrays) always returns copies. This is a classic interview trap — candidates often assume slices are copies.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">Why is np.dot behaving unexpectedly for 3D arrays? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">For N-D arrays, <code>np.dot(A, B)</code> is a sum product over the last axis of A and the second-to-last axis of B. This is unintuitive and often wrong. Use <code>@</code> (matmul) instead — it treats the last two dimensions as matrices and broadcasts over the rest, which is what you almost always want for batched operations.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">How would you implement softmax numerically stable? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">Subtract the max before exponentiating: <code>x -= x.max(axis=-1, keepdims=True)</code>. This shifts all values to be ≤0, so exp() stays in [0,1]. The result is mathematically identical because the max cancels in numerator and denominator. Without this, logits of 1000 cause <code>exp(1000) = inf</code> and you get <code>inf/inf = nan</code>.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">When would you use apply() vs vectorised string methods in Pandas? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a"><code>apply()</code> runs a Python function row-by-row — it's slow because it loops. Always prefer <code>df['col'].str.method()</code> for string ops (vectorised internally), <code>np.where()</code> for conditional logic, and <code>pd.cut()</code>/<code>pd.qcut()</code> for binning. Use <code>apply()</code> only when no vectorised equivalent exists. In interviews, naming <code>np.where</code> as the alternative to <code>apply</code> for conditionals signals senior-level knowledge.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">What is the SettingWithCopyWarning and how do you fix it? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">It occurs when you chain two indexing operations and try to set a value — Pandas can't guarantee whether you're modifying the original or a copy. Fix: always use <code>df.loc[mask, col] = value</code> for assignments. Or use <code>.copy()</code> to make the intent explicit when creating a subset. This is one of the most common pandas bugs in production code.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">What's the difference between transform and apply in groupby? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a"><code>apply()</code> reduces each group to a scalar or smaller DataFrame — the result has one row per group. <code>transform()</code> returns a result with the same shape as the input — it broadcasts the group result back to every row. Use <code>transform</code> when you want to add a group-level statistic back to each row (e.g., "salary minus department mean"). This pattern is very common in feature engineering.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">Explain SVD and one real-world application <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">SVD decomposes matrix M into U Σ Vᵀ where U and Vᵀ are orthogonal and Σ is diagonal with singular values in descending order. Taking the top-k singular values gives the best rank-k approximation of M (Eckart-Young theorem). Real-world uses: (1) PCA — project data onto principal components for dimensionality reduction; (2) recommender systems — factorize user-item matrix to find latent features; (3) image compression — store k singular vectors instead of full image. Interviewers love this because it connects linear algebra to ML.</div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q">How does broadcasting work for pairwise distance computation? <span class="qa-arrow">▼</span></div>
+    <div class="qa-a">The trick is inserting a new axis to create compatible shapes for broadcasting. For arrays A of shape (m,d) and B of shape (n,d): <code>A[:,None,:]</code> becomes (m,1,d), <code>B[None,:,:]</code> becomes (1,n,d). Subtracting broadcasts to (m,n,d) — every pair of rows. Then sum over the last axis and take sqrt to get the (m,n) distance matrix. This is O(mnd) with no loops, and numpy parallelises it internally. This is the key pattern for KNN, cosine similarity matrices, and attention score computation.</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('s-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+function toggleQA(el) {
+  el.classList.toggle('open');
+}
+</script>

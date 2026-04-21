@@ -1,0 +1,36 @@
+TITANIC DATA ANALYSIS — SUMMARY REPORT
+==================================================
+Passengers analysed : 891
+Features (raw)      : 11
+Features (engineered): 17
+
+── MISSING VALUES ──
+  Age imputed   : 0 rows (group median)
+  Cabin dropped : 686 rows (77.1% missing)
+  Embarked filled: 2 rows (mode)
+
+── KEY STATISTICS ──
+  Overall survival   : 52.1%
+  Female survival    : 73.8%
+  Male survival      : 39.4%
+  1st class survival : 68.4%
+  3rd class survival : 45.9%
+  Median age         : 28.8 yrs
+  Median fare        : £18.37
+  Solo travellers    : 52.9%
+
+── CORRELATIONS WITH SURVIVAL ──
+  Sex (Cramér's V)   : 0.3316  [strongest]
+  Pclass (Cramér's V): 0.1938
+  Fare (Pearson r)   : +0.1104
+  Age  (Pearson r)   : +0.0206
+
+── PCA SUMMARY ──
+  PC1 explains       : 39.4% of variance
+  PC2 explains       : 28.3% of variance
+  Top-2 PCs total    : 67.7% of variance
+
+── OUTLIERS ──
+  Fare (IQR)         : 86 outliers (9.7%)
+  Fare winsorized at : £218.18 (99th pct)
+  Multivariate (Mahalanobis): 51 outliers
